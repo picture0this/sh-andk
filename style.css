@@ -1,0 +1,518 @@
+/* ============ لعبة شعندك؟ ============ */
+
+:root {
+  --bg: #1a1a1a;
+  --panel: #101010;
+  --primary: #5a5de0;       /* أزرق بنفسجي مثل الهيدر بالتصميم */
+  --primary-dark: #4548c8;
+  --underline: #6d6ff0;
+  --card: #0d0d0d;
+  --text: #f5f5f5;
+  --muted: #b9b9c9;
+  --green: #21c93c;
+  --red: #e33131;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============ الهيدر ============ */
+.topbar {
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 22px 14px;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 3px 14px rgba(0,0,0,.45);
+}
+
+.game-title {
+  font-family: "Aref Ruqaa", "Cairo", serif;
+  font-weight: 700;
+  font-size: clamp(34px, 5.2vw, 62px);
+  color: #fff;
+  text-align: center;
+  flex: 0 1 auto;
+  line-height: 1.1;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35);
+  user-select: none;
+}
+
+.team-panel {
+  flex: 1 1 0;
+  max-width: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.team-label {
+  font-style: italic;
+  font-weight: 700;
+  font-size: 15px;
+  color: #eef;
+}
+
+.team-name {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  color: #23255a;
+  background: #cdd0f4;
+  border: 2px solid #9a9de8;
+  border-radius: 10px;
+  padding: 5px 12px;
+  width: 100%;
+  outline: none;
+  transition: box-shadow .15s, background .15s;
+}
+.team-name:focus { box-shadow: 0 0 0 3px rgba(255,255,255,.35); background: #e4e6ff; }
+.team-name:disabled { opacity: .75; cursor: not-allowed; }
+
+.score-row {
+  direction: ltr;   /* − يسار و + يمين مثل التصميم الأصلي */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 2px;
+}
+
+.score {
+  font-size: 30px;
+  font-weight: 900;
+  min-width: 70px;
+  text-align: center;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-btn {
+  font-family: inherit;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: background .12s, transform .08s;
+}
+.score-btn:hover { background: rgba(255,255,255,.18); }
+.score-btn:active { transform: scale(.9); }
+
+/* زر "اختر البطاقة هنا" (مستقبلاً) */
+.pick-card[hidden] { display: none; }
+.pick-card {
+  position: absolute;
+  top: -2px;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #dfe0ff;
+}
+.pick-btn {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(255,255,255,.15);
+  border: 1px dashed rgba(255,255,255,.5);
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+.pick-btn:active { transform: scale(.92); }
+
+.topbar-underline {
+  height: 8px;
+  margin: 8px 14px 0;
+  background: var(--underline);
+  border-radius: 4px;
+}
+
+/* ============ الشاشات ============ */
+#screens {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 26px 8px;
+}
+
+.screen { display: none; flex: 1; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+
+/* حد نقاط الفوز */
+.win-limit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-end;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 14px;
+}
+.win-limit-row input {
+  font-family: inherit;
+  width: 90px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  background: #26262e;
+  border: 1px solid #3c3c4a;
+  border-radius: 8px;
+  padding: 4px 8px;
+  outline: none;
+}
+.win-limit-row input:focus { border-color: var(--primary); }
+
+/* شبكة الفئات الرئيسية */
+.main-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 260px));
+  gap: 26px;
+  justify-content: center;
+}
+
+.cat-card {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: var(--card);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 16 / 10;
+  box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  transition: transform .15s, box-shadow .15s;
+  font-family: inherit;
+}
+.cat-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 26px rgba(0,0,0,.65); }
+.cat-card:active { transform: scale(.98); }
+
+.cat-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cat-card .cat-name {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 6px 10px;
+  font-size: 19px;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(0deg, rgba(0,0,0,.85) 20%, rgba(0,0,0,0));
+  text-shadow: 0 1px 4px #000;
+}
+
+.cat-card.mystery {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cat-card.mystery .cat-name {
+  position: static;
+  background: none;
+  font-size: 30px;
+  letter-spacing: 4px;
+  color: #cfcfcf;
+}
+
+/* اهتزاز للفئات غير الجاهزة */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.cat-card.shake { animation: shake .3s ease; }
+
+/* ============ الفئات الفرعية ============ */
+.sub-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 4px 18px;
+  max-width: 100%;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.sub-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 175px;
+  aspect-ratio: 9 / 16;
+  border: none;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--card);
+  box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  transition: transform .15s, box-shadow .15s;
+  font-family: inherit;
+}
+.sub-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,.7); }
+.sub-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sub-card .cat-name {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(0deg, rgba(0,0,0,.88) 30%, rgba(0,0,0,0));
+  text-shadow: 0 1px 4px #000;
+  text-align: center;
+}
+
+/* صورة مفقودة → خلفية بديلة */
+.cat-card.noimg img, .sub-card.noimg img { display: none; }
+.cat-card.noimg::before, .sub-card.noimg::before {
+  content: "؟";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  font-weight: 900;
+  color: rgba(255,255,255,.25);
+  background: linear-gradient(135deg, #2b2d55, #151515);
+}
+
+/* ============ شاشة الباركود ============ */
+.qr-team-label {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.qr-box {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.55);
+}
+.qr-box.small { padding: 12px; }
+.qr-box img, .qr-box canvas { display: block; }
+
+.big-btn {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1c1c1c;
+  background: #efefef;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 44px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,.4);
+  transition: background .12s, transform .08s;
+}
+.big-btn:hover { background: #fff; }
+.big-btn:active { transform: scale(.96); }
+
+.ghost-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid #3c3c4a;
+  border-radius: 8px;
+  padding: 6px 18px;
+  cursor: pointer;
+  transition: color .12s, border-color .12s;
+}
+.ghost-btn:hover { color: #fff; border-color: var(--muted); }
+
+/* ============ شاشة العدّاد ============ */
+.timer-wrap {
+  position: relative;
+  width: 190px;
+  height: 190px;
+}
+.timer-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-bg {
+  fill: none;
+  stroke: #2a2a2a;
+  stroke-width: 9;
+}
+.ring-fg {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 326.7;   /* 2πr, r=52 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .3s linear, stroke .3s;
+}
+.timer-wrap.low .ring-fg { stroke: var(--red); }
+
+.timer-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--red);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-btns { direction: ltr; display: flex; gap: 18px; } /* ↺ ⏸ ✓ مثل التصميم الأصلي */
+
+.icon-btn {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #111;
+  background: #fff;
+  border: 3px solid #111;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.5);
+  transition: transform .1s, background .12s;
+}
+.icon-btn:hover { background: #e8e8ff; }
+.icon-btn:active { transform: scale(.92); }
+.icon-btn.check { color: var(--green); }
+.icon-btn.paused { color: var(--primary); }
+
+/* ============ شاشة الكشف ============ */
+.reveal-grid {
+  display: flex;
+  gap: 70px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.reveal-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.reveal-team {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+}
+.winner-btn { direction: ltr; }
+
+/* ============ الفوتر ============ */
+.bottombar {
+  direction: ltr;   /* الشعار يسار وزر الرئيسية يمين مثل التصميم الأصلي */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 26px 14px;
+}
+.ktech-logo { height: 44px; opacity: .95; filter: brightness(1.55); }
+.home-btn {
+  font-size: 30px;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 10px;
+  transition: background .12s, transform .1s;
+}
+.home-btn:hover { background: rgba(255,255,255,.12); }
+.home-btn:active { transform: scale(.9); }
+
+/* ============ نافذة الفوز ============ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.overlay[hidden] { display: none; }
+
+.overlay-card {
+  background: linear-gradient(160deg, #2b2d6e, #16163a);
+  border: 2px solid var(--primary);
+  border-radius: 18px;
+  padding: 38px 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 50px rgba(0,0,0,.8);
+  animation: pop .35s ease;
+}
+@keyframes pop {
+  from { transform: scale(.7); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+.confetti { font-size: 52px; }
+.overlay-card h2 { font-size: 30px; font-weight: 900; color: #ffd75e; }
+.overlay-card p { color: var(--muted); font-weight: 700; }
+.overlay-btns { display: flex; gap: 14px; justify-content: center; margin-top: 8px; }
+
+/* ============ تنبيه صغير ============ */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  inset-inline-start: 50%;
+  transform: translateX(50%);
+  background: #2c2c38;
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 26px;
+  border-radius: 30px;
+  border: 1px solid #45455a;
+  box-shadow: 0 6px 20px rgba(0,0,0,.6);
+  z-index: 60;
+  animation: pop .25s ease;
+}
+.toast[hidden] { display: none; }
+
+/* ============ شاشات صغيرة ============ */
+@media (max-width: 860px) {
+  .topbar { flex-wrap: wrap; }
+  .game-title { order: -1; width: 100%; }
+  .team-panel { max-width: none; }
+  .main-grid { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
+}
