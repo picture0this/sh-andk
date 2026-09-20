@@ -164,6 +164,33 @@ var SUB_CATEGORIES = [
       { name: "فاست اند فيورس",   url: WIKI + "commons/thumb/4/4d/Fast_%26_Furious_Supercharged_%28Universal_Studios_Florida%29_1.jpg/960px-Fast_%26_Furious_Supercharged_%28Universal_Studios_Florida%29_1.jpg" },
       { name: "أفنجرز",           url: WIKI + "commons/thumb/4/43/Avengers_Campus_logo.svg/960px-Avengers_Campus_logo.svg.png" }
     ]
+  },
+  {
+    id: "makeup", name: "مكياج", img: "assets/sub/makeup.png",
+    items: [
+      // مكياج
+      { name: "فاونديشن NARS",              url: gimg("NARS foundation") },
+      { name: "كونسيلر Tarte",              url: gimg("Tarte concealer") },
+      { name: "بلاشر Rare Beauty",          url: gimg("Rare Beauty blush") },
+      { name: "هايلايتر Fenty Beauty",      url: gimg("Fenty Beauty highlighter") },
+      { name: "ماسكارا Maybelline",         url: gimg("Maybelline mascara") },
+      { name: "آيلاينر MAC",                url: gimg("MAC eyeliner") },
+      { name: "آيشادو Huda Beauty",         url: gimg("Huda Beauty eyeshadow palette") },
+      { name: "روج MAC",                    url: gimg("MAC lipstick") },
+      { name: "ليب قلوس Fenty Beauty",      url: gimg("Fenty Beauty lip gloss") },
+      { name: "بودرة تثبيت Laura Mercier",  url: gimg("Laura Mercier setting powder") },
+      // عناية بالبشرة
+      { name: "غسول CeraVe",                url: gimg("CeraVe cleanser") },
+      { name: "تونر The Ordinary",          url: gimg("The Ordinary toner") },
+      { name: "سيروم Estée Lauder",         url: gimg("Estée Lauder serum") },
+      { name: "مرطب CeraVe",                url: gimg("CeraVe moisturizer") },
+      { name: "واقي شمس La Roche-Posay",    url: gimg("La Roche-Posay sunscreen") },
+      { name: "ماسك وجه The Body Shop",     url: gimg("The Body Shop face mask") },
+      { name: "كريم عين Kiehl's",           url: gimg("Kiehl's eye cream") },
+      { name: "مرطب شفايف Laneige",         url: gimg("Laneige lip balm") },
+      { name: "مقشر Paula's Choice",        url: gimg("Paula's Choice exfoliant") },
+      { name: "بخاخ وجه Caudalie",          url: gimg("Caudalie facial mist") }
+    ]
   }
 ];
 
