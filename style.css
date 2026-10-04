@@ -389,6 +389,49 @@ body {
 .honest-btns[hidden] { display: none; }
 .footer-btns { display: flex; gap: 6px; }
 
+/* أسئلة "فك الرموز" داخل سؤال و جواب */
+.emoji-line {
+  font-size: clamp(42px, 8vw, 76px);
+  text-align: center;
+  letter-spacing: 8px;
+  line-height: 1.4;
+}
+
+/* ============ سمّ! ============ */
+.name-counter {
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+.name-count {
+  font-size: 76px;
+  font-weight: 900;
+  min-width: 130px;
+  text-align: center;
+  color: #ffd75e;
+  font-variant-numeric: tabular-nums;
+}
+.count-btn {
+  width: 68px;
+  height: 68px;
+  font-family: inherit;
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.5);
+  transition: background .12s, transform .08s;
+}
+.count-btn:hover { background: var(--underline); }
+.count-btn:active { transform: scale(.9); }
+
+.name-result-title { font-size: 34px; font-weight: 900; color: #ffd75e; }
+
 /* زر "بلش!" — ولا كلمة */
 .big-btn.start-btn {
   font-size: 32px;

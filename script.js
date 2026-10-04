@@ -16,6 +16,8 @@
     honest: null,         // { answerTeam } — جولة "خلك صريح" الحالية
     noword: null,         // { items:[itemA, itemB], step } — جولة "ولا كلمة"
     qa: { picked: [], used: {}, started: false, current: null, turn: 0 }, // "سؤال و جواب"
+    nameit: null,         // { step, counts:[n1,n2], challenges:[c1,c2] } — جولة "سمّ!"
+    nameUsed: [],         // التحديات المستخدمة
     honestTurn: 0,        // لتبديل الفريق السائل كل جولة
     winShownFor: [false, false]
   };
@@ -161,6 +163,8 @@
           showScreen("screen-honest-sub");
         } else if (cat.id === "noword") {
           showScreen("screen-noword-start");
+        } else if (cat.id === "nameit") {
+          startNameRound();
         } else if (cat.id === "qa") {
           // اللعبة شغالة؟ نرجع للوحة بنفس الفئات والأسئلة المستخدمة
           if (state.qa.started) {
@@ -278,10 +282,16 @@
   }
 
   // ---------- "سؤال و جواب" (سين جيم) ----------
+  // فئات خمن الصورة + الفئات الخاصة باللعبة (مثل فك الرموز)
+  function qaCats() {
+    return SUB_CATEGORIES.concat(QA_EXTRA_CATEGORIES);
+  }
+
   function renderQaPick() {
-    renderCardRow("qaPickRow", SUB_CATEGORIES, toggleQaPick);
+    var cats = qaCats();
+    renderCardRow("qaPickRow", cats, toggleQaPick);
     var kids = $("qaPickRow").children;
-    SUB_CATEGORIES.forEach(function (sub, i) {
+    cats.forEach(function (sub, i) {
       if (state.qa.picked.indexOf(sub.id) !== -1) kids[i].classList.add("selected");
     });
     updateQaStart();
@@ -312,7 +322,7 @@
     board.style.gridTemplateColumns = "repeat(" + state.qa.picked.length + ", 1fr)";
     state.qa.picked.forEach(function (id) {
       var sub = null;
-      SUB_CATEGORIES.forEach(function (s) { if (s.id === id) sub = s; });
+      qaCats().forEach(function (s) { if (s.id === id) sub = s; });
       var qs = QA_QUESTIONS[id];
       if (!sub || !qs) return;
 
@@ -342,6 +352,8 @@
     $("qaTurnLabel").textContent = "سؤال لـ «" + teamDisplayName(state.qa.turn) + "»";
     $("qaMeta").textContent = sub.name + " — " + q.pts + " نقطة";
     $("qaQuestion").textContent = q.q;
+    // أسئلة فك الرموز تنعرض بخط كبير
+    $("qaQuestion").classList.toggle("emoji-line", sub.id === "emoji");
     $("qaAnswer").textContent = q.a;
     $("qaAnswer").hidden = true;
     $("qaRevealBtn").hidden = false;
@@ -382,6 +394,66 @@
     $("qaResetOverlay").hidden = true;
     renderQaPick();
     showScreen("screen-qa-pick");
+  }
+
+  // ---------- "سمّ!" ----------
+  function startNameRound() {
+    // تحديين مختلفين (واحد لكل فريق) بدون تكرار — وإذا خلصوا نعيد
+    var pool = [];
+    NAME_CHALLENGES.forEach(function (_, i) { if (!state.nameUsed[i]) pool.push(i); });
+    if (pool.length < 2) {
+      state.nameUsed = [];
+      pool = [];
+      NAME_CHALLENGES.forEach(function (_, i) { pool.push(i); });
+      showToast("خلصت التحديات — نعيدها من جديد!");
+    }
+    var a = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    var b = pool[Math.floor(Math.random() * pool.length)];
+    state.nameUsed[a] = true;
+    state.nameUsed[b] = true;
+    state.nameit = { step: 0, counts: [0, 0], challenges: [NAME_CHALLENGES[a], NAME_CHALLENGES[b]] };
+    showNameTurn();
+  }
+
+  function showNameTurn() {
+    var n = state.nameit;
+    $("nameTurnLabel").textContent = "دور «" + teamDisplayName(n.step) + "»";
+    $("nameChallenge").textContent = "سمّوا أكبر عدد من: " + n.challenges[n.step];
+    $("nameCount").textContent = n.counts[n.step];
+    mountTimer("nameTimerSlot");
+    startTimer();
+    showScreen("screen-name");
+  }
+
+  function nameCountChange(delta) {
+    var n = state.nameit;
+    if (!n) return;
+    n.counts[n.step] = Math.max(0, n.counts[n.step] + delta);
+    $("nameCount").textContent = n.counts[n.step];
+  }
+
+  function nameDone() {
+    var n = state.nameit;
+    if (!n) return;
+    stopTimer();
+    if (n.step === 0) {
+      n.step = 1;
+      showNameTurn();
+      return;
+    }
+    // النتيجة — الأكثر يفوز بنقاط الجولة
+    var c0 = n.counts[0], c1 = n.counts[1];
+    if (c0 === c1) {
+      $("nameResultTitle").textContent = "تعادل! 🤝";
+    } else {
+      var w = c0 > c1 ? 0 : 1;
+      changeScore(w, GAME_DEFAULTS.roundPoints);
+      $("nameResultTitle").textContent = "🏆 " + teamDisplayName(w) + " فاز بـ +" + GAME_DEFAULTS.roundPoints;
+    }
+    $("nameResultDetail").textContent =
+      teamDisplayName(0) + ": " + c0 + " — " + teamDisplayName(1) + ": " + c1;
+    state.nameit = null;
+    showScreen("screen-name-result");
   }
 
   // ---------- جولة "ولا كلمة" ----------
@@ -448,6 +520,7 @@
     $("timerPauseBtn").classList.remove("paused");
     $("nowordPauseBtn").classList.remove("paused");
     $("qaTimerPauseBtn").classList.remove("paused");
+    $("nameTimerPauseBtn").classList.remove("paused");
     renderTimer();
     timer.handle = setInterval(tick, 1000);
   }
@@ -461,6 +534,7 @@
     $("timerPauseBtn").classList.toggle("paused", timer.paused);
     $("nowordPauseBtn").classList.toggle("paused", timer.paused);
     $("qaTimerPauseBtn").classList.toggle("paused", timer.paused);
+    $("nameTimerPauseBtn").classList.toggle("paused", timer.paused);
   }
 
   // العدّاد عنصر واحد — ننقله للشاشة اللي تحتاجه
@@ -535,6 +609,12 @@
     $("qaRevealBtn").addEventListener("click", qaReveal);
     $("qaTimerResetBtn").addEventListener("click", startTimer);
     $("qaTimerPauseBtn").addEventListener("click", pauseTimer);
+    $("nameTimerResetBtn").addEventListener("click", startTimer);
+    $("nameTimerPauseBtn").addEventListener("click", pauseTimer);
+    $("namePlusBtn").addEventListener("click", function () { nameCountChange(1); });
+    $("nameMinusBtn").addEventListener("click", function () { nameCountChange(-1); });
+    $("nameDoneBtn").addEventListener("click", nameDone);
+    $("nameAgainBtn").addEventListener("click", startNameRound);
     $("qaTeam1Btn").addEventListener("click", function () { qaAward(0); });
     $("qaTeam2Btn").addEventListener("click", function () { qaAward(1); });
     $("qaNoneBtn").addEventListener("click", function () { qaAward(-1); });
@@ -564,6 +644,7 @@
     $("homeBtn").addEventListener("click", function () {
       state.round = null;
       state.noword = null;
+      state.nameit = null;
       showScreen("screen-home");
     });
 
