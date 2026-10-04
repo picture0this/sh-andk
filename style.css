@@ -297,6 +297,108 @@ body {
   text-align: center;
 }
 
+/* ============ شاشة سؤال "خلك صريح" ============ */
+.honest-question {
+  max-width: 760px;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 900;
+  line-height: 1.9;
+  text-align: center;
+  color: var(--text);
+}
+
+.honest-btns { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+.big-btn.answer { background: var(--green); color: #fff; }
+.big-btn.answer:hover { background: #2ee04c; }
+
+/* ============ سؤال و جواب (سين جيم) ============ */
+.qa-hint { color: var(--muted); font-weight: 700; font-size: 16px; }
+
+.sub-card.selected {
+  outline: 4px solid var(--green);
+  outline-offset: -4px;
+  transform: translateY(-4px);
+}
+.sub-card.selected::after {
+  content: "\2714";
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+
+.qa-board {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-width: 1100px;
+}
+.qa-col { display: flex; flex-direction: column; gap: 10px; }
+.qa-cat {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 6px;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qa-val {
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffd75e;
+  background: #23255a;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 0;
+  cursor: pointer;
+  transition: background .12s, transform .08s;
+  font-variant-numeric: tabular-nums;
+}
+.qa-val:hover:not(:disabled) { background: #2b2d6e; }
+.qa-val:active:not(:disabled) { transform: scale(.96); }
+.qa-val:disabled { opacity: .22; cursor: default; }
+
+.qa-team { font-size: 23px; font-weight: 900; color: #ffd75e; }
+.qa-timer-btns .icon-btn { width: 46px; height: 46px; font-size: 19px; border-width: 2px; }
+.qa-meta { color: var(--muted); font-weight: 900; font-size: 19px; }
+.qa-answer {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--green);
+  text-align: center;
+}
+
+.big-btn:disabled { opacity: .45; cursor: not-allowed; }
+.honest-btns[hidden] { display: none; }
+.footer-btns { display: flex; gap: 6px; }
+
+/* زر "بلش!" — ولا كلمة */
+.big-btn.start-btn {
+  font-size: 32px;
+  font-weight: 900;
+  padding: 18px 90px;
+  background: var(--primary);
+  color: #fff;
+}
+.big-btn.start-btn:hover { background: var(--underline); }
+
 /* صورة مفقودة → خلفية بديلة */
 .cat-card.noimg img, .sub-card.noimg img { display: none; }
 .cat-card.noimg::before, .sub-card.noimg::before {
@@ -394,6 +496,7 @@ body {
 }
 
 .timer-btns { direction: ltr; display: flex; gap: 18px; } /* ↺ ⏸ ✓ مثل التصميم الأصلي */
+.timer-btns[hidden] { display: none; }
 
 .icon-btn {
   width: 64px;
@@ -414,6 +517,7 @@ body {
 .icon-btn:hover { background: #e8e8ff; }
 .icon-btn:active { transform: scale(.92); }
 .icon-btn.check { color: var(--green); }
+.icon-btn.wrong { color: var(--red); }
 .icon-btn.paused { color: var(--primary); }
 
 /* ============ شاشة الكشف ============ */

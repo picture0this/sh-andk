@@ -58,6 +58,56 @@
       <div class="sub-row" id="subRow"></div>
     </section>
 
+    <!-- ======= شاشة الفئات الفرعية (خلك صريح) ======= -->
+    <section class="screen" id="screen-honest-sub">
+      <div class="sub-row" id="honestRow"></div>
+    </section>
+
+    <!-- ======= شاشة سؤال "خلك صريح" ======= -->
+    <section class="screen" id="screen-honest-q">
+      <p class="honest-question" id="honestQuestion"></p>
+      <div class="honest-btns">
+        <button class="big-btn answer" id="honestAnswerBtn" type="button">جاوب</button>
+        <button class="big-btn" id="honestSkipBtn" type="button">امتنع عن الاجابة</button>
+      </div>
+    </section>
+
+    <!-- ======= شاشة اختيار فئات "سؤال و جواب" ======= -->
+    <section class="screen" id="screen-qa-pick">
+      <p class="qa-hint">اختاروا لين ٦ فئات</p>
+      <div class="sub-row" id="qaPickRow"></div>
+      <button class="big-btn start-btn" id="qaStartBtn" type="button" disabled>بلش!</button>
+    </section>
+
+    <!-- ======= لوحة "سؤال و جواب" ======= -->
+    <section class="screen" id="screen-qa-board">
+      <div class="qa-board" id="qaBoard"></div>
+    </section>
+
+    <!-- ======= شاشة السؤال ======= -->
+    <section class="screen" id="screen-qa-q">
+      <div id="qaTimerSlot"></div>
+      <div class="timer-btns qa-timer-btns">
+        <button class="icon-btn" id="qaTimerResetBtn" title="إعادة العدّاد" type="button">&#8634;</button>
+        <button class="icon-btn" id="qaTimerPauseBtn" title="إيقاف مؤقت" type="button">&#10074;&#10074;</button>
+      </div>
+      <p class="qa-team" id="qaTurnLabel"></p>
+      <p class="qa-meta" id="qaMeta"></p>
+      <p class="honest-question" id="qaQuestion"></p>
+      <p class="qa-answer" id="qaAnswer" hidden></p>
+      <button class="big-btn" id="qaRevealBtn" type="button">الجواب</button>
+      <div class="honest-btns" id="qaAwardRow" hidden>
+        <button class="big-btn answer" id="qaTeam1Btn" type="button"></button>
+        <button class="big-btn answer" id="qaTeam2Btn" type="button"></button>
+        <button class="big-btn" id="qaNoneBtn" type="button">محد جاوب</button>
+      </div>
+    </section>
+
+    <!-- ======= شاشة بداية "ولا كلمة" ======= -->
+    <section class="screen" id="screen-noword-start">
+      <button class="big-btn start-btn" id="nowordStartBtn" type="button">بلش!</button>
+    </section>
+
     <!-- ======= شاشة الباركود (فريق واحد) ======= -->
     <section class="screen" id="screen-qr">
       <p class="qr-team-label" id="qrTeamLabel"></p>
@@ -67,17 +117,25 @@
 
     <!-- ======= شاشة العدّاد ======= -->
     <section class="screen" id="screen-timer">
-      <div class="timer-wrap">
+      <div id="timerSlot">
+      <div class="timer-wrap" id="timerWrap">
         <svg class="timer-ring" viewBox="0 0 120 120">
           <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
           <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"></circle>
         </svg>
         <span class="timer-num" id="timerNum">30</span>
       </div>
-      <div class="timer-btns">
+      </div>
+      <div class="timer-btns" id="guessTimerBtns">
         <button class="icon-btn" id="timerResetBtn" title="إعادة العدّاد" type="button">&#8634;</button>
         <button class="icon-btn" id="timerPauseBtn" title="إيقاف مؤقت" type="button">&#10074;&#10074;</button>
         <button class="icon-btn check" id="timerNextBtn" title="تم التخمين!" type="button">&#10004;</button>
+      </div>
+      <div class="timer-btns" id="nowordTimerBtns" hidden>
+        <button class="icon-btn" id="nowordResetBtn" title="إعادة العدّاد" type="button">&#8634;</button>
+        <button class="icon-btn" id="nowordPauseBtn" title="إيقاف مؤقت" type="button">&#10074;&#10074;</button>
+        <button class="icon-btn wrong" id="nowordWrongBtn" title="ما عرفوها" type="button">&#10006;</button>
+        <button class="icon-btn check" id="nowordRightBtn" title="عرفوها!" type="button">&#10004;</button>
       </div>
     </section>
 
@@ -102,7 +160,10 @@
   <!-- ======= شعار الكلية + زر الرئيسية ======= -->
   <footer class="bottombar">
     <img class="ktech-logo" src="assets/ktech-logo.png" alt="ktech">
-    <button class="home-btn" id="homeBtn" title="الرئيسية" hidden type="button">&#8962;</button>
+    <div class="footer-btns">
+      <button class="home-btn" id="qaResetBtn" title="إعادة اختيار الفئات" hidden type="button">&#8635;</button>
+      <button class="home-btn" id="homeBtn" title="الرئيسية" hidden type="button">&#8962;</button>
+    </div>
   </footer>
 
   <!-- ======= نافذة الفوز ======= -->
@@ -114,6 +175,18 @@
       <div class="overlay-btns">
         <button class="big-btn" id="newGameBtn" type="button">لعبة جديدة</button>
         <button class="ghost-btn" id="keepPlayingBtn" type="button">استمرار باللعب</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= تأكيد إعادة اختيار الفئات ======= -->
+  <div class="overlay" id="qaResetOverlay" hidden>
+    <div class="overlay-card">
+      <h2>إعادة اختيار الفئات؟</h2>
+      <p>بترجعون لصفحة اختيار الفئات وتنفتح كل الأسئلة من جديد.</p>
+      <div class="overlay-btns">
+        <button class="big-btn" id="qaResetOkBtn" type="button">حسنا</button>
+        <button class="ghost-btn" id="qaResetCancelBtn" type="button">إلغاء</button>
       </div>
     </div>
   </div>
